@@ -1,7 +1,6 @@
 import express from "express";
-import { getDb } from "../db/conn.js";
 import mongodb from "mongodb";
-import { fetchTwitterApi } from "../fetch/twitter/api.js";
+import { writeTwitterDataToDb } from "../fetch/twitter/write.js";
 
 // indexRoutes is an instance of the express router.
 // We use it to define our routes.
@@ -14,14 +13,6 @@ export const indexRoutes = express.Router();
 const ObjectId = mongodb.ObjectId;
 
 indexRoutes.route("/").get(async function (req, res) {
-  const data = await fetchTwitterApi();
-  console.log(JSON.stringify(data));
-  let db_connect = getDb();
-  db_connect
-    .collection("records")
-    .find({})
-    .toArray(function (err, result) {
-      if (err) throw err;
-      res.json(result);
-    });
+  const twitterTrends = await writeTwitterDataToDb();
+  res.json(twitterTrends);
 });
