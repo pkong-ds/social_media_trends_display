@@ -1,6 +1,7 @@
-import express from 'express';
-import {getDb} from "../db/conn.js";
-import mongodb from 'mongodb';
+import express from "express";
+import { getDb } from "../db/conn.js";
+import mongodb from "mongodb";
+import { fetchTwitterApi } from "../fetch/twitter/api.js";
 
 // indexRoutes is an instance of the express router.
 // We use it to define our routes.
@@ -12,7 +13,9 @@ export const indexRoutes = express.Router();
 // This help convert the id from string to ObjectId for the _id.
 const ObjectId = mongodb.ObjectId;
 
-indexRoutes.route("/").get(function (req, res) {
+indexRoutes.route("/").get(async function (req, res) {
+  const data = await fetchTwitterApi();
+  console.log(JSON.stringify(data));
   let db_connect = getDb();
   db_connect
     .collection("records")
