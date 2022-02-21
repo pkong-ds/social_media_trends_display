@@ -17,10 +17,10 @@ export const indexRoutes = express.Router();
 const ObjectId = mongodb.ObjectId;
 
 indexRoutes.route("/").get(async function (req, res) {
-  clearTwitterCollections().then(() => {
-    writeTwitterDataToDb().then(async () => {
-      const twitterTrends = await readTwitterDataFromDb();
-      res.json(twitterTrends);
-    });
-  });
+  // clearTwitterCollections().then(() => {
+  //   writeTwitterDataToDb().then(async () => {
+  const twitterTrends = await readTwitterDataFromDb();
+  res.json(twitterTrends);
+  //   });
+  // });
 });
