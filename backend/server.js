@@ -1,14 +1,14 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
-import { indexRoutes } from "./routes/index.js";
+import { useRouter } from "./routes/twitter.js";
 import { connectToDatabase } from "./db/conn.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
-app.use(indexRoutes);
+useRouter(app);
 // get driver connection
 
 app.listen(port, () => {
