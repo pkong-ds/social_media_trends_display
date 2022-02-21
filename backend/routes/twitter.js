@@ -9,25 +9,24 @@ import {
 // twitterRoutes is an instance of the express router.
 // We use it to define our routes.
 // The router will be added as a middleware and will take control of requests starting with path /record.
-export const useRouter = (app) => {
-  const twitterRoutes = express.Router();
+const twitterRouter = express.Router();
 
-  // This will help us connect to the database
+// This will help us connect to the database
 
-  // This help convert the id from string to ObjectId for the _id.
-  const ObjectId = mongodb.ObjectId;
+// This help convert the id from string to ObjectId for the _id.
+const ObjectId = mongodb.ObjectId;
 
-  twitterRoutes.route("/twitter/write").get(async function (req, res) {
-    clearTwitterCollections().then(() => {
-      writeTwitterDataToDb().then(() => {
-        res.end("New twitter trends fetched");
-      });
+twitterRouter.get("/write", async function (req, res) {
+  clearTwitterCollections().then(() => {
+    writeTwitterDataToDb().then(() => {
+      res.end("New twitter trends fetched");
     });
   });
+});
 
-  twitterRoutes.route("/twitter/read").get(async function (req, res) {
-    const twitterTrends = await readTwitterDataFromDb();
-    res.json(twitterTrends);
-  });
-  app.use(twitterRoutes);
-};
+twitterRouter.get("/read", async function (req, res) {
+  const twitterTrends = await readTwitterDataFromDb();
+  res.json(twitterTrends);
+});
+
+export default twitterRouter;

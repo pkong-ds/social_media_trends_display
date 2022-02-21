@@ -5,7 +5,7 @@ export const readTwitterDataFromDb = async () => {
   try {
     const descVolumeSort = { tweet_volume: -1 };
     const findResult = await dbConnect
-      .collection("trends")
+      .collection("TwitterTrends")
       .find()
       .sort(descVolumeSort)
       .toArray();
@@ -28,7 +28,7 @@ export const readTwitterDataFromDb = async () => {
 //   const { query, trends } = parseTwitterData(data);
 //   clearTwitterCollections();
 //   let dbConnect = getDb();
-//   dbConnect.collection("trends").insertMany(trends, (err, res) => {
+//   dbConnect.collection("TwitterTrends").insertMany(trends, (err, res) => {
 //     if (err) throw err;
 //     console.log(`Inserted *${res.insertedCount}* documents`);
 //   });
@@ -37,7 +37,7 @@ export const readTwitterDataFromDb = async () => {
 
 // const clearTwitterCollections = () => {
 //   let dbConnect = getDb();
-//   dbConnect.collection("trends").drop((err, delOK) => {
+//   dbConnect.collection("TwitterTrends").drop((err, delOK) => {
 //     if (err) throw err;
 //     if (delOK) console.log("Collection 'trends' deleted");
 //   });
