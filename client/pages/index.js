@@ -1,20 +1,38 @@
 import Head from "next/head";
 import Image from "next/image";
+import { useState } from "react";
 import styles from "../styles/Home.module.css";
+import { getReadApi, getWriteApi } from "../utils/getApi";
 
-export async function getStaticProps() {
-  const res = await fetch("http://localhost:5555/");
-  const trends = await res.json();
+export async function getServerSideProps() {
+  const res = await fetch(getReadApi("twitter"));
+  const initialTwitterTrends = await res.json();
   return {
     props: {
-      trends,
+      initialTwitterTrends,
     },
   };
 }
 
-export default function Home({ trends }) {
-  console.log(trends);
+export default function Home({ initialTwitterTrends }) {
+  const [twitterTrends, setTwitterTrends] = useState(initialTwitterTrends);
+  const refetchTwitterTrends = async () => {
+    let newTwitterTrends = [];
+    await fetch(getWriteApi("twitter")).then(() => {
+      setTimeout(async () => {
+        const readTwitterRes = await fetch(getReadApi("twitter"));
+        newTwitterTrends = await readTwitterRes.json();
+        newTwitterTrends = [{ name: "Peter Kong" }];
+        setTwitterTrends(newTwitterTrends);
+      }, 3000); // allow time for upload-then-read from database
+    });
+  };
 
+  const onClickTwitterRefetch = (e) => {
+    console.log("Refetching ...");
+    e.preventDefault();
+    refetchTwitterTrends();
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -26,39 +44,15 @@ export default function Home({ trends }) {
       <main className={styles.main}>
         <h1 className={styles.title}>Social Media Trends</h1>
 
-        <p className={styles.description}>To be implemented refetch button</p>
+        <button onClick={onClickTwitterRefetch}>Refetch</button>
 
         <div className={styles.grid}>
-          {trends.map((t) => (
-            <p className={styles.card}>{t.name}</p>
+          {twitterTrends.map((t) => (
+            <a href={t.url} className={styles.card}>
+              <h2>{t.name}</h2>
+              <p>{t.tweet_volume ?? "N/A"}</p>
+            </a>
           ))}
-          {/* <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a> */}
         </div>
       </main>
 
