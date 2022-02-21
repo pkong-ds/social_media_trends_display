@@ -3,7 +3,12 @@ import { getDb } from "../../db/conn.js";
 export const readTwitterDataFromDb = async () => {
   let dbConnect = await getDb();
   try {
-    const findResult = await dbConnect.collection("trends").find({}).toArray();
+    const descVolumeSort = { tweet_volume: -1 };
+    const findResult = await dbConnect
+      .collection("trends")
+      .find()
+      .sort(descVolumeSort)
+      .toArray();
     console.log("Successfully retrived twitter trends from database.");
     return findResult;
   } catch (err) {

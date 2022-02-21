@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
 import styles from "../styles/Home.module.css";
+import formatNumber from "../utils/formatNumber";
 import { getReadApi, getWriteApi } from "../utils/getApi";
 
 export async function getServerSideProps() {
@@ -22,15 +23,14 @@ export default function Home({ initialTwitterTrends }) {
       setTimeout(async () => {
         const readTwitterRes = await fetch(getReadApi("twitter"));
         newTwitterTrends = await readTwitterRes.json();
-        newTwitterTrends = [{ name: "Peter Kong" }];
         setTwitterTrends(newTwitterTrends);
-      }, 3000); // allow time for upload-then-read from database
+      }, 3000); // allow time for upload, then read
     });
   };
 
   const onClickTwitterRefetch = (e) => {
-    console.log("Refetching ...");
     e.preventDefault();
+    console.log("Refetching twitter...");
     refetchTwitterTrends();
   };
   return (
@@ -48,9 +48,9 @@ export default function Home({ initialTwitterTrends }) {
 
         <div className={styles.grid}>
           {twitterTrends.map((t) => (
-            <a href={t.url} className={styles.card}>
+            <a key={t._id} href={t.url} className={styles.card}>
               <h2>{t.name}</h2>
-              <p>{t.tweet_volume ?? "N/A"}</p>
+              <p>{t.tweet_volume ? formatNumber(t.tweet_volume) : "N/A"}</p>
             </a>
           ))}
         </div>
