@@ -11,9 +11,9 @@
 
 ## Potential Improvements 
 1. should limit to one database connection at a time
-2. 3000ms delay to read database seem too long, should optimize without `setTimeout` approach
-3. countless additional features, real-time graph trends of different items, save trend etc.
-
+2. `3000ms` delay to read database seem too long, should optimize without `setTimeout` approach
+3. countless additional features, real-time graph trends of different items, image preview, etc.
+4. code quality: three apis codes are actually very similar, to uphold DRY, should refactor as a new component and pass `type: twitter | google | reddit` as props
  
 
 
