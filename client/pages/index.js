@@ -50,14 +50,15 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>Social Media Trends</h1>
         <div className={styles.columnsContainer}>
           <div className={styles.column}>
+            <h1>Twitter Trends</h1>
             <button onClick={onClickTwitterRefetch}>Refetch Twitter</button>
 
             <div className={styles.grid}>
-              {twitterTrends.map((t) => (
+              {twitterTrends.map((t, index) => (
                 <a key={t._id} href={t.url} className={styles.card}>
+                  <h2>{index + 1}</h2>
                   <h2>{t.name}</h2>
                   <p>{t.tweet_volume ? formatNumber(t.tweet_volume) : "N/A"}</p>
                 </a>
@@ -65,6 +66,7 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
             </div>
           </div>
           <div className={styles.column}>
+            <h1>Google Search Trends</h1>
             <button>Refetch Google</button>
             <div className={styles.grid}>
               {googleTrends.map((t) => (
