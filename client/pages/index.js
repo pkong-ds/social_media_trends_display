@@ -99,7 +99,9 @@ export default function Home({
       <main className={styles.main}>
         <div className={styles.columnsContainer}>
           <div className={styles.column}>
-            <h1>Twitter Trends</h1>
+            <h1>
+              <span className={styles.twitterString}>Twitter Trends</span>
+            </h1>
             <button disabled={isTwitterLoading} onClick={onClickTwitterRefetch}>
               Refetch Twitter
             </button>
@@ -141,7 +143,7 @@ export default function Home({
             {isGoogleLoading && <h4>Refetching ...</h4>}
           </div>
           <div className={styles.column}>
-            <h1>Reddit Trends</h1>
+            <h1 className={styles.redditString}>Reddit Trends</h1>
             <button disabled={isRedditLoading} onClick={onClickRedditRefetch}>
               Refetch Reddit
             </button>
