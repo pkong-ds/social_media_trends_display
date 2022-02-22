@@ -21,14 +21,18 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
+  const [isTwitterLoading, setIsTwitterLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
   const [twitterTrends, setTwitterTrends] = useState(initialTwitterTrends);
   const refetchTwitterTrends = async () => {
-    let newTwitterTrends = [];
+    setIsTwitterLoading(true);
     await fetch(getWriteApi("twitter")).then(() => {
       setTimeout(async () => {
         const readTwitterRes = await fetch(getReadApi("twitter"));
-        newTwitterTrends = await readTwitterRes.json();
+        const newTwitterTrends = await readTwitterRes.json();
         setTwitterTrends(newTwitterTrends);
+        setIsTwitterLoading(false);
       }, 3000); // allow time for upload, then read
     });
   };
@@ -40,6 +44,23 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
   };
 
   const [googleTrends, setGoogleTrends] = useState(initialGoogleTrends);
+
+  const refetchGoogleTrends = async () => {
+    setIsGoogleLoading(true);
+    await fetch(getWriteApi("google")).then(() => {
+      setTimeout(async () => {
+        const readGoogleRes = await fetch(getReadApi("google"));
+        const newGoogleTrends = await readGoogleRes.json();
+        setGoogleTrends(newGoogleTrends);
+        setIsGoogleLoading(false);
+      }, 3000); // allow time for upload, then read
+    });
+  };
+  const onClickGoogleRefetch = (e) => {
+    e.preventDefault();
+    console.log("Refetching google...");
+    refetchGoogleTrends();
+  };
 
   return (
     <div className={styles.container}>
@@ -55,27 +76,39 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
             <h1>Twitter Trends</h1>
             <button onClick={onClickTwitterRefetch}>Refetch Twitter</button>
 
-            <div className={styles.grid}>
-              {twitterTrends.map((t, index) => (
-                <a key={t._id} href={t.url} className={styles.card}>
-                  <h2>{index + 1}</h2>
-                  <h2>{t.name}</h2>
-                  <p>{t.tweet_volume ? formatNumber(t.tweet_volume) : "N/A"}</p>
-                </a>
-              ))}
-            </div>
+            {!isTwitterLoading && (
+              <div className={styles.grid}>
+                {twitterTrends.map((t, index) => (
+                  <a key={t._id} href={t.url} className={styles.card}>
+                    <h2>{index + 1}</h2>
+                    <h2>{t.name}</h2>
+                    <p>
+                      {t.tweet_volume ? formatNumber(t.tweet_volume) : "N/A"}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            )}
+            {isTwitterLoading && <h4>Refetching ...</h4>}
           </div>
           <div className={styles.column}>
             <h1>Google Search Trends</h1>
-            <button>Refetch Google</button>
-            <div className={styles.grid}>
-              {googleTrends.map((t) => (
-                <a key={t._id} href={t.googleUrl} className={styles.googleCard}>
-                  <h2>{t.searchRank}</h2>
-                  <div>{t.entityNames.join(" • ")}</div>
-                </a>
-              ))}
-            </div>
+            <button onClick={onClickGoogleRefetch}>Refetch Google</button>
+            {!isGoogleLoading && (
+              <div className={styles.grid}>
+                {googleTrends.map((t) => (
+                  <a
+                    key={t._id}
+                    href={t.googleUrl}
+                    className={styles.googleCard}
+                  >
+                    <h2>{t.searchRank}</h2>
+                    <div>{t.entityNames.join(" • ")}</div>
+                  </a>
+                ))}
+              </div>
+            )}
+            {isGoogleLoading && <h4>Refetching ...</h4>}
           </div>
           <div className={styles.column}>some Reddit trends</div>
         </div>
