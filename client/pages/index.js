@@ -74,7 +74,9 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
         <div className={styles.columnsContainer}>
           <div className={styles.column}>
             <h1>Twitter Trends</h1>
-            <button onClick={onClickTwitterRefetch}>Refetch Twitter</button>
+            <button disabled={isTwitterLoading} onClick={onClickTwitterRefetch}>
+              Refetch Twitter
+            </button>
 
             {!isTwitterLoading && (
               <div className={styles.grid}>
@@ -93,7 +95,9 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
           </div>
           <div className={styles.column}>
             <h1>Google Search Trends</h1>
-            <button onClick={onClickGoogleRefetch}>Refetch Google</button>
+            <button disabled={isGoogleLoading} onClick={onClickGoogleRefetch}>
+              Refetch Google
+            </button>
             {!isGoogleLoading && (
               <div className={styles.grid}>
                 {googleTrends.map((t) => (
