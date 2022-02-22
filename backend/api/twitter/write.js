@@ -4,19 +4,24 @@ import { parseTwitterData } from "./parse.js";
 
 export const writeTwitterDataToDb = async () => {
   const data = await fetchTwitterApi();
-  const { query, trends } = parseTwitterData(data);
+  const { query, trends: twitterTrends } = parseTwitterData(data);
+
   let dbConnect = await getDb();
-  await dbConnect.collection("trends").insertMany(trends, (err, res) => {
-    if (err) throw err;
-    console.log(`Inserted *${res.insertedCount}* documents`);
-  });
-  return trends;
+  await dbConnect
+    .collection("TwitterTrends")
+    .insertMany(twitterTrends, (err, res) => {
+      if (err) throw err;
+      console.log(
+        `Inserted *${res.insertedCount}* documents to collection 'TwitterTrends'`
+      );
+    });
+  return twitterTrends;
 };
 
 export const clearTwitterCollections = async () => {
   let dbConnect = await getDb();
-  dbConnect.collection("trends").drop((err, delOK) => {
-    if (err) throw err;
-    if (delOK) console.log("Collection 'trends' deleted");
+  dbConnect.collection("TwitterTrends").drop((err, delOK) => {
+    if (err) console.error(err);
+    if (delOK) console.log("Collection 'TwitterTrends' deleted");
   });
 };
