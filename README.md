@@ -2,7 +2,7 @@
 1. clone repo `git clone https://github.com/pkong-ds/social_media_trends_display.git && cd social_media_trends_display`
 2. run `cd backend/ && npm i && cd ../client && npm i && cd ..`
 3. \[IMPORTANT\] copy & paste provided `.env` file to `backend/`
-4. run `node backend/server.js`
+4. run `cd backend/ && node server.js`
 5. open a new terminal tab, run `cd client/ && npm run dev`
 6. go to `http://localhost:3000/` to check out the app!
 
