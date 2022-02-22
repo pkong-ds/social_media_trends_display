@@ -7,24 +7,35 @@ import { getReadApi, getWriteApi } from "../utils/getApi";
 
 export async function getServerSideProps() {
   // note: use Promise.all() to manage 3 parallel api-calls
-  const [initialTwitterTrends, initialGoogleTrends] = await Promise.all([
-    fetch(getReadApi("twitter")).then((res) => res.json()),
-    fetch(getReadApi("google")).then((res) => res.json()),
-  ]);
+  const [initialTwitterTrends, initialGoogleTrends, initialRedditTrends] =
+    await Promise.all([
+      fetch(getReadApi("twitter")).then((res) => res.json()),
+      fetch(getReadApi("google")).then((res) => res.json()),
+      fetch(getReadApi("reddit")).then((res) => res.json()),
+    ]);
 
   return {
     props: {
       initialTwitterTrends,
       initialGoogleTrends,
+      initialRedditTrends,
     },
   };
 }
 
-export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
+export default function Home({
+  initialTwitterTrends,
+  initialGoogleTrends,
+  initialRedditTrends,
+}) {
   const [isTwitterLoading, setIsTwitterLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isRedditLoading, setIsRedditLoading] = useState(false);
 
   const [twitterTrends, setTwitterTrends] = useState(initialTwitterTrends);
+  const [googleTrends, setGoogleTrends] = useState(initialGoogleTrends);
+  const [redditTrends, setRedditTrends] = useState(initialRedditTrends);
+
   const refetchTwitterTrends = async () => {
     setIsTwitterLoading(true);
     await fetch(getWriteApi("twitter")).then(() => {
@@ -43,8 +54,6 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
     refetchTwitterTrends();
   };
 
-  const [googleTrends, setGoogleTrends] = useState(initialGoogleTrends);
-
   const refetchGoogleTrends = async () => {
     setIsGoogleLoading(true);
     await fetch(getWriteApi("google")).then(() => {
@@ -60,6 +69,23 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
     e.preventDefault();
     console.log("Refetching google...");
     refetchGoogleTrends();
+  };
+
+  const refetchRedditTrends = async () => {
+    setIsRedditLoading(true);
+    await fetch(getWriteApi("reddit")).then(() => {
+      setTimeout(async () => {
+        const readRedditRes = await fetch(getReadApi("reddit"));
+        const newRedditTrends = await readRedditRes.json();
+        setRedditTrends(newRedditTrends);
+        setIsRedditLoading(false);
+      }, 3000); // allow time for upload, then read
+    });
+  };
+  const onClickRedditRefetch = (e) => {
+    e.preventDefault();
+    console.log("Refetching reddit...");
+    refetchRedditTrends();
   };
 
   return (
@@ -114,7 +140,24 @@ export default function Home({ initialTwitterTrends, initialGoogleTrends }) {
             )}
             {isGoogleLoading && <h4>Refetching ...</h4>}
           </div>
-          <div className={styles.column}>some Reddit trends</div>
+          <div className={styles.column}>
+            <h1>Reddit Trends</h1>
+            <button disabled={isRedditLoading} onClick={onClickRedditRefetch}>
+              Refetch Reddit
+            </button>
+            {!isRedditLoading && (
+              <div className={styles.grid}>
+                {redditTrends.map((t, index) => (
+                  <a key={t._id} href={t.url} className={styles.redditCard}>
+                    <h3>{index + 1}</h3>
+                    <h2>{t.title}</h2>
+                    <p>{t.score ? formatNumber(t.score) : "N/A"}</p>
+                  </a>
+                ))}
+              </div>
+            )}
+            {isRedditLoading && <h4>Refetching ...</h4>}
+          </div>
         </div>
       </main>
 
